@@ -28,12 +28,17 @@
             <div class="editor-title" contenteditable="true" placeholder="Untitled Note">
               Untitled Note
             </div>
-            <div class="tab-navigation-container">
-              <div class="tab-navigation">
-                <button class="tab-button active" data-tab="note">Polished</button>
-                <button class="tab-button" data-tab="raw">Raw</button>
-                <div class="active-tab-indicator"></div>
+            <div class="header-controls">
+              <div class="tab-navigation-container">
+                <div class="tab-navigation">
+                  <button class="tab-button active" data-tab="note">Polished</button>
+                  <button class="tab-button" data-tab="raw">Raw</button>
+                  <div class="active-tab-indicator"></div>
+                </div>
               </div>
+              <button class="header-icon-button" id="copyButton" title="Copy to Clipboard">
+                <i class="fas fa-copy"></i>
+              </button>
             </div>
           </div>
 
@@ -85,6 +90,9 @@
 
             <button class="action-button" id="newButton" title="New Note / Clear">
               <i class="fas fa-file"></i>
+            </button>
+            <button class="action-button" id="exportButton" title="Export Note">
+              <i class="fas fa-download"></i>
             </button>
           </div>
         </div>

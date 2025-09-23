@@ -24,6 +24,8 @@ class VoiceNotesApp {
   private rawTranscription: HTMLDivElement;
   private polishedNote: HTMLDivElement;
   private newButton: HTMLButtonElement;
+  private exportButton: HTMLButtonElement;
+  private copyButton: HTMLButtonElement;
   private themeToggleButton: HTMLButtonElement;
   private themeToggleIcon: HTMLElement;
   private audioChunks: Blob[] = [];
@@ -66,6 +68,10 @@ class VoiceNotesApp {
       'polishedNote',
     ) as HTMLDivElement;
     this.newButton = document.getElementById('newButton') as HTMLButtonElement;
+    this.exportButton = document.getElementById(
+      'exportButton',
+    ) as HTMLButtonElement;
+    this.copyButton = document.getElementById('copyButton') as HTMLButtonElement;
     this.themeToggleButton = document.getElementById(
       'themeToggleButton',
     ) as HTMLButtonElement;
@@ -117,6 +123,10 @@ class VoiceNotesApp {
     this.recordButton.addEventListener('click', () => this.toggleRecording());
     this.newButton.addEventListener('click', () => this.createNewNote());
     this.themeToggleButton.addEventListener('click', () => this.toggleTheme());
+    this.exportButton.addEventListener('click', () => this.exportNote());
+    this.copyButton.addEventListener('click', () =>
+      this.copyActiveNoteContent(),
+    );
     window.addEventListener('resize', this.handleResize.bind(this));
   }
 
@@ -735,6 +745,107 @@ class VoiceNotesApp {
         this.polishedNote.innerHTML = placeholder;
         this.polishedNote.classList.add('placeholder-active');
       }
+    }
+  }
+
+  private sanitizeFilename(name: string): string {
+    const sanitized = name
+      .trim()
+      .replace(/\s+/g, '_') // Replace spaces with underscores
+      .replace(/[\\/:\*?"<>\|]/g, ''); // Remove other invalid characters
+    return sanitized.substring(0, 100) || `note_${Date.now()}`;
+  }
+
+  private exportNote(): void {
+    const noteContent = this.polishedNote.innerText;
+
+    const placeholder = this.polishedNote.getAttribute('placeholder') || '';
+    if (
+      !noteContent ||
+      noteContent.trim() === '' ||
+      noteContent.trim() === placeholder
+    ) {
+      this.recordingStatus.textContent = 'Nothing to export.';
+      setTimeout(() => {
+        if (this.recordingStatus.textContent === 'Nothing to export.') {
+          this.recordingStatus.textContent = 'Ready to record';
+        }
+      }, 3000);
+      return;
+    }
+
+    const placeholderTitle =
+      this.editorTitle.getAttribute('placeholder') || 'Untitled Note';
+    let noteTitle = this.editorTitle.textContent?.trim() || '';
+
+    if (!noteTitle || noteTitle === placeholderTitle) {
+      noteTitle = `Note-${Date.now()}`;
+    }
+
+    const filename = `${this.sanitizeFilename(noteTitle)}.txt`;
+
+    const blob = new Blob([noteContent], {type: 'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = filename;
+
+    document.body.appendChild(a);
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  }
+
+  private async copyActiveNoteContent(): Promise<void> {
+    const activeContentElement = document.querySelector(
+      '.note-content.active',
+    ) as HTMLElement;
+    if (!activeContentElement) return;
+
+    const contentToCopy = activeContentElement.innerText;
+    const placeholder = activeContentElement.getAttribute('placeholder') || '';
+
+    const showStatusMessage = (message: string, duration: number) => {
+      const originalStatus = this.recordingStatus.textContent;
+      this.recordingStatus.textContent = message;
+      setTimeout(() => {
+        if (this.recordingStatus.textContent === message) {
+          this.recordingStatus.textContent = originalStatus;
+        }
+      }, duration);
+    };
+
+    if (
+      !contentToCopy ||
+      contentToCopy.trim() === '' ||
+      contentToCopy.trim() === placeholder.trim()
+    ) {
+      showStatusMessage('Nothing to copy.', 2000);
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(contentToCopy);
+
+      const icon = this.copyButton.querySelector('i') as HTMLElement;
+      if (!icon) return;
+
+      icon.classList.remove('fa-copy');
+      icon.classList.add('fa-check');
+      this.copyButton.classList.add('copied');
+
+      showStatusMessage('Copied to clipboard!', 2000);
+
+      setTimeout(() => {
+        icon.classList.remove('fa-check');
+        icon.classList.add('fa-copy');
+        this.copyButton.classList.remove('copied');
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy content: ', err);
+      showStatusMessage('Failed to copy to clipboard.', 2000);
     }
   }
 
