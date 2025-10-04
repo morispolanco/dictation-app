@@ -115,6 +115,7 @@
         const tabButtons = tabNav.querySelectorAll(".tab-button");
         const activeTabIndicator = tabNav.querySelector(".active-tab-indicator");
         const noteContents = document.querySelectorAll(".note-content");
+        const copyButton = document.getElementById("copyButton");
 
         function setActiveTab(activeButton, skipAnimation = false) {
           if (!activeButton || !activeTabIndicator) return;
@@ -127,8 +128,10 @@
 
           if (tabName === "elaborated") {
             document.getElementById("elaboratedNote").classList.add("active");
+            if (copyButton) copyButton.title = "Copy Elaborated Note";
           } else {
             document.getElementById("polishedNote").classList.add("active");
+            if (copyButton) copyButton.title = "Copy Polished Note";
           }
 
           const originalTransition = activeTabIndicator.style.transition;

@@ -137,7 +137,7 @@ class VoiceNotesApp {
   private bindEventListeners(): void {
     this.recordButton.addEventListener('click', () => this.toggleRecording());
     this.newButton.addEventListener('click', () => this.createNewNote());
-    this.copyButton.addEventListener('click', () => this.copyPolishedNoteToClipboard());
+    this.copyButton.addEventListener('click', () => this.copyActiveNoteToClipboard());
     window.addEventListener('resize', this.handleResize.bind(this));
     
     // History event listeners
@@ -153,10 +153,16 @@ class VoiceNotesApp {
     window.addEventListener('beforeunload', () => this.saveDraft(true));
   }
 
-  private async copyPolishedNoteToClipboard(): Promise<void> {
-    const contentToCopy = this.polishedNote.innerText.trim();
-    if (!contentToCopy || this.polishedNote.classList.contains('placeholder-active')) {
-      console.warn('No polished note content to copy.');
+  private async copyActiveNoteToClipboard(): Promise<void> {
+    const activeNoteElement = document.querySelector('.note-content.active') as HTMLDivElement;
+    if (!activeNoteElement) {
+        console.warn('No active note element found to copy.');
+        return;
+    }
+    
+    const contentToCopy = activeNoteElement.innerText.trim();
+    if (!contentToCopy || activeNoteElement.classList.contains('placeholder-active')) {
+      console.warn('No active note content to copy.');
       return;
     }
 
