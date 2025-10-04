@@ -6,7 +6,7 @@
 
 This contains everything you need to run your app locally.
 
-View your app in AI Studio: https://ai.studio/apps/bundled/gemini-dictation
+View your app in AI Studio: https://ai.studio/apps/drive/1hiam4d4Jw9iSdrBHQNX4dr3PCdbUgHfQ
 
 ## Run Locally
 

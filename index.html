@@ -22,21 +22,32 @@
   </head>
   <body>
     <div class="app-container">
+      <div id="historyPanel" class="history-panel">
+        <div class="history-header">
+          <h2 class="history-title">History</h2>
+          <button id="closeHistoryButton" class="header-action-button" title="Close History">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <ul id="historyList" class="history-list">
+          <!-- History items will be populated by JS -->
+        </ul>
+      </div>
+      <div id="overlay" class="overlay"></div>
+
       <div class="main-content">
         <div class="note-area">
           <div class="note-header">
             <div class="editor-title" contenteditable="true" placeholder="Untitled Note">
               Untitled Note
             </div>
-            <div class="header-controls">
-              <div class="tab-navigation-container">
-                <div class="tab-navigation">
-                  <button class="tab-button active" data-tab="note">Polished</button>
-                  <button class="tab-button" data-tab="raw">Raw</button>
-                  <div class="active-tab-indicator"></div>
-                </div>
+            <div class="tab-navigation-container">
+              <div class="tab-navigation">
+                <button class="tab-button active" data-tab="note">Polished</button>
+                <button class="tab-button" data-tab="elaborated">Elaborated</button>
+                <div class="active-tab-indicator"></div>
               </div>
-              <button class="header-icon-button" id="copyButton" title="Copy to Clipboard">
+              <button id="copyButton" class="header-action-button" title="Copy Polished Note">
                 <i class="fas fa-copy"></i>
               </button>
             </div>
@@ -50,10 +61,10 @@
               placeholder="Your polished notes will appear here..."
             ></div>
             <div
-              id="rawTranscription"
+              id="elaboratedNote"
               class="note-content"
               contenteditable="true"
-              placeholder="Raw transcription will appear here..."
+              placeholder="Your elaborated notes will appear here..."
             ></div>
           </div>
         </div>
@@ -72,8 +83,8 @@
           </div>
 
           <div class="recording-controls">
-            <button class="action-button" id="themeToggleButton" title="Toggle Theme">
-              <i class="fas fa-sun"></i>
+            <button class="action-button" id="historyButton" title="View History">
+              <i class="fas fa-history"></i>
             </button>
 
             <button id="recordButton" class="record-button" title="Start/Stop Recording">
@@ -90,9 +101,6 @@
 
             <button class="action-button" id="newButton" title="New Note / Clear">
               <i class="fas fa-file"></i>
-            </button>
-            <button class="action-button" id="exportButton" title="Export Note">
-              <i class="fas fa-download"></i>
             </button>
           </div>
         </div>
@@ -117,8 +125,8 @@
           const tabName = activeButton.getAttribute("data-tab");
           noteContents.forEach((content) => content.classList.remove("active"));
 
-          if (tabName === "raw") {
-            document.getElementById("rawTranscription").classList.add("active");
+          if (tabName === "elaborated") {
+            document.getElementById("elaboratedNote").classList.add("active");
           } else {
             document.getElementById("polishedNote").classList.add("active");
           }
